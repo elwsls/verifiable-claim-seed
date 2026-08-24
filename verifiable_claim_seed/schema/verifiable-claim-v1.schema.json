@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "verifiable-claim-v1",
+  "title": "verifiable-claim-v1",
+  "description": "Machine-checkable claim contract. Fields ARE the contract (agent-only, no prose ambiguity). Tier rules machine-enforced here and by the verify_claim gate. 可复现≠可验证: repro+frozen prove internal consistency; external correctness is carried by the anchor.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "claim_id", "statement", "made_at", "tier"],
+  "properties": {
+    "format": { "const": "verifiable-claim-v1" },
+    "claim_id": { "type": "string", "pattern": "^VC-[0-9]{8}-[0-9]{3,}$" },
+    "statement": { "type": "string", "minLength": 1 },
+    "made_at": { "type": "string", "format": "date" },
+    "tier": { "enum": ["primary", "derived", "computed"] },
+    "assumptions": { "type": "string", "minLength": 1 },
+    "anchor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "source", "asof"],
+      "properties": {
+        "mode": { "enum": ["frozen-bytes", "text-quote"] },
+        "source": { "type": "string", "minLength": 1 },
+        "asof": { "type": "string", "format": "date" },
+        "quote": { "type": "string", "minLength": 1 },
+        "locator": { "type": "string", "minLength": 1 },
+        "file": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "snapshot": { "type": "string", "minLength": 1 },
+        "snapshot_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "repro": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["script"],
+      "properties": {
+        "script": { "type": "string", "minLength": 1 },
+        "args": { "type": "array", "items": { "type": "string" } },
+        "expect_exit": { "type": "integer" },
+        "expect_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "expect_values": {
+          "type": "object",
+          "description": "脚本输出须含的派生数值（label=value 行）。gate 解析脚本 stdout 中 label=value 逐值比对，且要求每个值以独立 token 出现在 statement 中——堵 statement 与脚本输出脱钩（伪脚本打印正确哈希即可通过）。",
+          "additionalProperties": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "frozen": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["file", "sha256"],
+      "properties": {
+        "file": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "supersedes": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^VC-[0-9]{8}-[0-9]{3,}$" }
+    },
+    "stage": {
+      "enum": ["growing", "settled", "peak", "trough"],
+      "description": "claim 方向相位（四阶段态）：growing=上升期（confidence rising）、settled=稳定期（已定）、peak=峰值（验证到顶，下一步是衰减）、trough=谷底（怀疑到底，下一步是决断）。peak/trough 即转折信号——处于峰/谷的声明下一步最可能翻转，agent 应读转折信号而非静态 PASS。"
+    },
+    "doubt": {
+      "type": "array",
+      "description": "doubt 表面：未验/存疑/局限清单，作为声明的影子。PASS 永远带着影子出厂——空 doubt 表面=峰值/peak 信号（无影子的 PASS 最该被盯）。",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "what", "since", "stage"],
+        "properties": {
+          "kind": { "enum": ["unverified", "suspect", "limitation"] },
+          "what": { "type": "string", "minLength": 1 },
+          "since": { "type": "string", "format": "date" },
+          "stage": {
+            "enum": ["growing", "settled", "peak", "trough"],
+            "description": "doubt 项自身的走向相位（不是 claim 的 stage）：growing=缺口在扩大/悬而未决、settled=缺口已稳定（短期不会恶化也不会解决）、peak=缺口验证到顶/即将被证伪、trough=缺口接近谷底/即将下结论。kind 描述缺口的种类，stage 描述缺口的方向——故 kind=unverified + stage=settled 不矛盾：指'这个未核实的缺口已稳定存在，暂不计划回补'。"
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$comment": "anchor.mode 决定强制字段：text-quote 必须带逐字引用句+定位+源快照字节承诺（快照哈希+引用句在快照中真实在场，机器可核）；frozen-bytes 必须带文件+64位哈希。",
+      "if": {
+        "properties": {
+          "anchor": {
+            "properties": { "mode": { "const": "text-quote" } },
+            "required": ["mode"]
+          }
+        }
+      },
+      "then": {
+        "properties": { "anchor": { "required": ["quote", "locator", "snapshot", "snapshot_sha256"] } }
+      },
+      "else": {
+        "properties": { "anchor": { "required": ["file", "sha256"] } }
+      }
+    },
+    {
+      "$comment": "tier=primary: 必须有独立锚；无需 repro/frozen（锚即正确性载体）。",
+      "if": { "properties": { "tier": { "const": "primary" } } },
+      "then": { "required": ["anchor"] }
+    },
+    {
+      "$comment": "tier=derived/computed: 必须可复现（frozen+repro）且必须有独立锚（可复现≠可验证）。",
+      "if": { "properties": { "tier": { "enum": ["derived", "computed"] } } },
+      "then": { "required": ["anchor", "frozen", "repro"] }
+    },
+    {
+      "$comment": "tier=computed: 必须显式声明模型假设。",
+      "if": { "properties": { "tier": { "const": "computed" } } },
+      "then": { "required": ["assumptions"] }
+    }
+  ]
+}

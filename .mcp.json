@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "verifiable-claim-seed": {
+      "command": "python3",
+      "args": ["verifiable_claim_seed/mcp_server.py"]
+    }
+  }
+}

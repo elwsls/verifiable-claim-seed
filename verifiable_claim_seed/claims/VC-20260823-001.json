@@ -1,0 +1,38 @@
+{
+  "format": "verifiable-claim-v1",
+  "claim_id": "VC-20260823-001",
+  "statement": "「每天 1 万步」这一全球流行的健康目标，其数字并非来自医学证据，而是源自 1965 年前后日本 Yamasa Clock 公司为计步器 Manpo-kei（万歩計，意为“一万步计”）所做的营销命名——该数字自此作为每日步数目标扩散至全球。",
+  "made_at": "2026-08-23",
+  "tier": "primary",
+  "anchor": {
+    "mode": "text-quote",
+    "source": "World Cancer Research Fund 博客《Do we really need to walk 10,000 steps a day?》，作者 Lindsay Bottoms（University of Hertfordshire 运动与健康生理学 Reader），2021-03-09 发布",
+    "asof": "2026-08-23",
+    "quote": "The 10,000 steps a day target seems to have come about from a trade name pedometer sold in 1965 by Yamasa Clock in Japan. The device was called “Manpo-kei”, which translates to “10,000 steps meter”. This was a marketing tool for the device and has seemed to have stuck across the world as the daily step target.",
+    "locator": "https://www.wcrf.org/about-us/news-and-blogs/do-we-really-need-to-walk-10000-steps-a-day/",
+    "snapshot": "data/wcrf-10000-steps-20260823.html",
+    "snapshot_sha256": "a773f5ad3a0b04b14b563a1e16b5377bc32acba3192e089f1381eb420dc13e68"
+  },
+  "supersedes": [],
+  "stage": "settled",
+  "doubt": [
+    {
+      "kind": "unverified",
+      "what": "起源年份与厂商各家说法不一（1964/1965/1968 等），本文仅锚定 WCRF 一源，未穷尽全部版本；“Manpo-kei”确切的营销动机（为何选 1 万这个数）未核一手档案。",
+      "since": "2026-08-23",
+      "stage": "growing"
+    },
+    {
+      "kind": "limitation",
+      "what": "锚源为科普性二手综述（WCRF 博客），非一手商业史料；其措辞 “seems to have come about” 本身即为推测性表述。",
+      "since": "2026-08-23",
+      "stage": "settled"
+    },
+    {
+      "kind": "suspect",
+      "what": "部分来源将起源归于 1964 东京奥运健康风潮或不同厂商；需更多一手史料才能钉死单一版本。",
+      "since": "2026-08-23",
+      "stage": "growing"
+    }
+  ]
+}

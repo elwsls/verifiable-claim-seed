@@ -1,0 +1,35 @@
+# verifiable-claim-seed
+
+Minimal verifiable-claims trust substrate: machine-checkable claim contract + zero-dependency gate + three real samples (space frozen-bytes + health text-quote).
+可复现≠可验证 (reproducible≠verifiable): repro+frozen prove internal consistency; external correctness is carried by the anchor.
+text-quote anchors carry a frozen source snapshot (snapshot + snapshot_sha256): the gate byte-checks the snapshot hash and confirms the verbatim quote actually occurs in the snapshot text (whitespace/entity tolerant). Both anchor modes are byte-level; the machine checks "the quote is in this snapshot", whether the snapshot is the real source still needs a human/AI.
+Security: verify runs repro.script via subprocess (120s timeout) — only verify claims you trust. No sandbox: paths resolve relative to the package root (the gate script's directory), not the claim JSON; repro.script must be Python; a forged script printing the right hash+values still passes rc0 (design boundary, not a bug).
+
+## files
+- verifiable_claim_seed/schema/verifiable-claim-v1.schema.json — claim contract (JSON Schema 2020-12, additionalProperties:false, tier rules in allOf)
+- verifiable_claim_seed/verify_claim.py — zero-dependency gate (stdlib only, self-test built in)
+- verifiable_claim_seed/claims/VC-20260815-001.json — real sample claim (ISS NORAD 25544, derived, frozen TLE anchor)
+- verifiable_claim_seed/claims/VC-20260823-001.json — sample claim (10,000-steps marketing origin, primary, text-quote anchor → WCRF)
+- verifiable_claim_seed/claims/VC-20260823-002.json — sample claim (steps-mortality plateau, primary, text-quote anchor → Paluch 2022 Lancet Public Health)
+- verifiable_claim_seed/data/iss_20260814.tle — frozen TLE snapshot (sha256 da99457e…afaf)
+- verifiable_claim_seed/data/wcrf-10000-steps-20260823.html — frozen source snapshot for VC-20260823-001 (sha256 a773f5ad…e68)
+- verifiable_claim_seed/data/pmc-9289978-20260823.html — frozen source snapshot for VC-20260823-002 (sha256 7678dfb4…39f)
+- verifiable_claim_seed/scripts/verify_iss.py — zero-dependency repro script (recomputes height, prints sha256). Two modes: no args = online fetch of latest TLE (current decaying value, differs from the frozen-epoch claim value); with FILE arg = local frozen TLE (reproduces claim's 418.3 km)
+- verifiable_claim_seed/mcp_server.py — zero-dependency MCP server over stdio (tools: self_test / validate / verify-with-allow_execution)
+- verifiable_claim_seed/mcp_agent_sim.py — simulated stranger-agent walkthrough of the full MCP flow (discover→decide→call, zero-human usable proof, 8 cases)
+- server.json — MCP registry manifest (io.github.elwsls/verifiable-claim-seed, PyPI/stdio)
+- docs/news-appendix.md — human-readable concept exhibit (doubt surface + stage translated for non-programmers; the exhibit itself carries its own doubt surface)
+- docs/news-release-10000-steps.md — human-readable news-release exhibit (10,000 steps story; carries own doubt surface + anchor)
+- docs/academic-claim-10000-steps.md — human-readable academic claim report (renders VC-20260823-001/002 with verbatim quotes + locators)
+
+## usage
+pip install verifiable-claim-seed   # zero dependencies
+verify-claim self-test
+verify-claim verify <claim.json> [--report out.json]
+# or from the repo:
+python3 verifiable_claim_seed/verify_claim.py self-test
+python3 verifiable_claim_seed/verify_claim.py verify <claim.json> [--report out.json]
+Exit: 0 pass / 1 hard fail / 2 usage / 3 evidence contract violation.
+
+For full machine-readable catalog, read ai-catalog.json first.
+License: MIT.

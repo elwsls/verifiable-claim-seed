@@ -1,0 +1,38 @@
+{
+  "format": "verifiable-claim-v1",
+  "claim_id": "VC-20260823-002",
+  "statement": "步数与全因死亡风险呈非线性负相关：≥60 岁在 6000–8000 步/天后风险降低趋平，<60 岁在 8000–10000 步/天后趋平；“每天 1 万步”被广泛推广但缺乏证据支持（观察性研究，非因果）。",
+  "made_at": "2026-08-23",
+  "tier": "primary",
+  "anchor": {
+    "mode": "text-quote",
+    "source": "Paluch AE 等，《Daily steps and all-cause mortality: a meta-analysis of 15 international cohorts》，Lancet Public Health 2022;7(3):e219-e228（Steps for Health Collaborative）",
+    "asof": "2026-08-23",
+    "quote": "Restricted cubic splines showed progressively decreasing risk of mortality among adults aged 60 years and older with increasing number of steps per day until 6000–8000 steps per day and among adults younger than 60 years until 8000–10 000 steps per day.",
+    "locator": "doi:10.1016/S2468-2667(21)00302-9 · PMID 35247352 · PMC9289978",
+    "snapshot": "data/pmc-9289978-20260823.html",
+    "snapshot_sha256": "7678dfb4e83ccfb7fcf2344a4c0d6bfe54ecd630ae2c1c0d4dbed76d78b8239f"
+  },
+  "supersedes": [],
+  "stage": "settled",
+  "doubt": [
+    {
+      "kind": "limitation",
+      "what": "观察性队列研究（meta 分析 15 队列 / 47471 成人），关联非因果，不能排除反向因果与混杂。",
+      "since": "2026-08-23",
+      "stage": "settled"
+    },
+    {
+      "kind": "limitation",
+      "what": "步数测量依赖各队列设备协议，跨研究可比性有限；具体趋平数值（6000-8000 等）随证据更新可能微调。",
+      "since": "2026-08-23",
+      "stage": "settled"
+    },
+    {
+      "kind": "unverified",
+      "what": "本研究发布于 2022 年，未纳入此后更新的系统综述（如 2025 年 57 研究综述），最新证据的趋平数值待核。",
+      "since": "2026-08-23",
+      "stage": "growing"
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "format": "verifiable-claim-seed-catalog-v1",
+  "name": "verifiable-claim-seed",
+  "version": "1.3.1",
+  "license": "MIT",
+  "description": "Minimal verifiable-claims trust substrate: machine-checkable claim contract (schema v1, additive doubt/stage) + zero-dependency gate + three real samples (space frozen-bytes + health text-quote). 可复现≠可验证 (reproducible≠verifiable): repro+frozen prove internal consistency; external correctness is carried by the anchor. PASS 永远带着影子出厂: doubt 表面 + stage 方向相位让错的在场可核。",
+  "dependencies": [],
+  "language": ["python3", "json"],
+  "entrypoints": {
+    "gate": "verifiable_claim_seed/verify_claim.py",
+    "schema": "verifiable_claim_seed/schema/verifiable-claim-v1.schema.json",
+    "claims_dir": "verifiable_claim_seed/claims/",
+    "sample_claim": "verifiable_claim_seed/claims/VC-20260815-001.json",
+    "sample_claim_health_origin": "verifiable_claim_seed/claims/VC-20260823-001.json",
+    "sample_claim_health_science": "verifiable_claim_seed/claims/VC-20260823-002.json",
+    "source_snapshot_origin": "verifiable_claim_seed/data/wcrf-10000-steps-20260823.html",
+    "source_snapshot_science": "verifiable_claim_seed/data/pmc-9289978-20260823.html",
+    "mcp_server": "verifiable_claim_seed/mcp_server.py",
+    "mcp_agent_sim": "verifiable_claim_seed/mcp_agent_sim.py",
+    "mcp_registry_manifest": "server.json",
+    "concept_article": "docs/news-appendix.md",
+    "news_release_exhibit": "docs/news-release-10000-steps.md",
+    "academic_claim_exhibit": "docs/academic-claim-10000-steps.md"
+  },
+  "verify": {
+    "gate_self_test": "python3 verifiable_claim_seed/verify_claim.py self-test",
+    "verify_claim": "python3 verifiable_claim_seed/verify_claim.py verify <claim.json>",
+    "exit_codes": {
+      "0": "all structure + content checks pass",
+      "1": "hard fail (structure/format/referenced file missing inside claim)",
+      "2": "usage/environment (command-line arg / claim file missing)",
+      "3": "evidence contract violation (hash mismatch / repro divergence)"
+    }
+  },
+  "concepts": {
+    "tier": ["primary", "derived", "computed"],
+    "anchor_mode": ["frozen-bytes", "text-quote"],
+    "text_quote_snapshot": "text-quote 锚必须带源快照字节承诺（snapshot + snapshot_sha256）：gate 逐字节核验快照哈希，并从快照抽文本做排版归一化+去空白紧凑比对，逐字引用句须真实在场。机器核'引用句在这份快照里'；快照是否确为现实源头仍须人工/AI 核。HTML 实体/渲染空格（如 'Manpo-kei' 与逗号间空格）不误报。frozen-bytes 与 text-quote 因此同为字节级锚定，强度对齐。",
+    "tier_rules": {
+      "primary": "requires anchor only (anchor is the correctness carrier)",
+      "derived": "requires anchor + frozen + repro",
+      "computed": "requires anchor + frozen + repro + assumptions"
+    },
+    "reproducible_neq_verifiable": "repro+frozen prove internal consistency only; external correctness is carried by the anchor (verbatim quote + locator, or frozen bytes + sha256)",
+    "stage": ["growing", "settled", "peak", "trough"],
+    "doubt_kinds": ["unverified", "suspect", "limitation"],
+    "pass_carries_shadow": "PASS 永远带着影子出厂：门禁报 N 项未验 + M 项存疑 + doubt 清单；空 doubt 表面=峰值/peak 信号（无影子的 PASS 最该被盯）",
+    "human_readable_exhibit": "docs/ 下三件人类样张构成'一个声明、三种语域'：概念（news-appendix，讲概念）→ 新闻稿（news-release-10000-steps，实践概念——一条新闻稿自带存疑+锚）→ 学术声明（academic-claim-10000-steps，锁定——逐字引用句+定位，对应机器声明 VC-20260823-001/002）。题材选「1 万步」：反直觉×个人相关×一句话说清×可锚定×零敏感。所有人类样张 verify_tier 独立于 schema tier，不参与门禁——各样张 frontmatter 已直接标注，勿混为机器声明字段",
+    "verify_executes_code": "verify 会以 subprocess 真实执行声明里的 repro.script（120s 超时）——只验证你信任的声明；验证来源不受信的声明等于在本机执行其声明的任意代码",
+    "path_semantics": "声明内 data/scripts 路径相对包根（gate 脚本目录）解析，非相对声明 JSON——验证外部拷来的单文件声明前请保持完整仓库结构",
+    "repro_python_only": "repro.script 必须为 Python 脚本（gate 以 sys.executable 执行）；shell/其他语言会被当失败脚本误报",
+    "no_sandbox": "门禁无沙箱：以调用者权限运行、路径可穿越仓库根——安全依赖'只验证你信任的声明'，勿当隔离环境",
+    "design_boundary": "门禁验'脚本按其声明输出'，不验'脚本计算正确'——伪造 repro.script 打印正确哈希+期望数值即可通过；完整性来自冻结输入字节（anchor/frozen）与声明自洽，非数学",
+    "verify_iss_two_modes": "scripts/verify_iss.py 双模式：无参数联网下载最新 TLE（输出当前值，随再入逐日衰减，与声明冻结历元值不同）；带 FILE 参数用本地冻结 TLE（复现声明 418.3 km）"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "format": "verifiable-claim-v1",
+  "claim_id": "VC-20260815-001",
+  "statement": "国际空间站（ISS，NORAD 25544）轨道高度约 418.3 km（2026-08-14 历元）。",
+  "made_at": "2026-08-15",
+  "tier": "derived",
+  "anchor": {
+    "mode": "frozen-bytes",
+    "source": "CelesTrak 公开 TLE（NORAD 25544）——美国太空部队 18 空间防御中队官方编目经 CelesTrak 公开镜像",
+    "asof": "2026-08-14",
+    "file": "data/iss_20260814.tle",
+    "sha256": "da99457ef3417b3383d2e0c5bff92dbbec9ee132a889bb6ace06ae8786e3afaf"
+  },
+  "frozen": {
+    "file": "data/iss_20260814.tle",
+    "sha256": "da99457ef3417b3383d2e0c5bff92dbbec9ee132a889bb6ace06ae8786e3afaf"
+  },
+  "repro": {
+    "script": "scripts/verify_iss.py",
+    "args": ["data/iss_20260814.tle"],
+    "expect_exit": 0,
+    "expect_sha256": "da99457ef3417b3383d2e0c5bff92dbbec9ee132a889bb6ace06ae8786e3afaf",
+    "expect_values": {"alt_km": "418.3"}
+  },
+  "supersedes": [],
+  "stage": "peak",
+  "doubt": [
+    {
+      "kind": "limitation",
+      "what": "轨道高度随历元衰减：418.3 km 仅对应 2026-08-14 历元，随 ISS 缓慢再入逐日降低，非当前/未来值。",
+      "since": "2026-08-15",
+      "stage": "growing"
+    },
+    {
+      "kind": "suspect",
+      "what": "第三位小数（418.3 的 0.3 km）超出 TLE 有效精度：SGP4 传播在低轨误差约 0.5–1 km 量级，精确值宜写 418 km 量级。",
+      "since": "2026-08-15",
+      "stage": "settled"
+    },
+    {
+      "kind": "unverified",
+      "what": "锚源表述（CelesTrak 为官方 18 SDS 编目的公开镜像）依赖镜像自述，未逐字核引官方原文档；此缺口稳定存在（settled），暂不计划回补。",
+      "since": "2026-08-15",
+      "stage": "settled"
+    }
+  ]
+}
